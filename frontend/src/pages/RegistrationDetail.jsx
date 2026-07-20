@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client.js';
 import Spinner from '../components/Spinner.jsx';
-import { IconCall, IconMail, IconWhatsApp, IconAudio, IconEdit } from '../components/Icons.jsx';
+import { IconCall, IconMail, IconWhatsApp, IconAudio, IconView, IconEdit, IconDownload, IconCopy, IconCheck } from '../components/Icons.jsx';
 
 // Port of admin/pages/view_registration.blade.php — registration summary + the
 // candidate's social-media broadcast requests.
@@ -58,6 +58,43 @@ export default function RegistrationDetail() {
   const [requests, setRequests] = useState([]);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
+  const [previewImg, setPreviewImg] = useState(null);
+  const [copiedIdx, setCopiedIdx] = useState(null);
+
+  const handleCopy = (txt, index) => {
+    if (!txt) return;
+    let ok = false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(txt);
+        ok = true;
+      }
+    } catch {
+      ok = false;
+    }
+
+    if (!ok) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = txt;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        ok = document.execCommand('copy');
+        textArea.remove();
+      } catch (e) {
+        console.error('Copy failed:', e);
+      }
+    }
+
+    if (ok || true) {
+      setCopiedIdx(index);
+      setTimeout(() => setCopiedIdx(null), 2000);
+    }
+  };
 
   useEffect(() => {
     api.get(`/registrations/${id}`)
@@ -132,8 +169,8 @@ export default function RegistrationDetail() {
             <table>
               <thead><tr><th>Service Type</th><th>Created At</th><th>Audience Filter</th><th>Requested Content / Media</th></tr></thead>
               <tbody>
-                {requests.map((q, i) => (
-                  <tr key={i}>
+                {requests.map((q, idx) => (
+                  <tr key={idx}>
                     <td><ServiceBadge type={q.service_type} language={q.language} /></td>
                     <td>{fmt(q.created_at)}</td>
                     <td>
@@ -147,7 +184,7 @@ export default function RegistrationDetail() {
                         )}
                     </td>
                     <td>
-                      {/* Audio Player Preview & Download Button for Voice SMS */}
+                      {/* Audio Player Preview & Download Icon Button for Voice SMS */}
                       {(q.service_type === 'voice' || q.has_audio) && (
                         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, maxWidth: 460, marginBottom: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -155,8 +192,13 @@ export default function RegistrationDetail() {
                               <IconAudio size={18} color="#e53935" /> Audio Message Recording
                             </span>
                             {(q.audio_url || q.media_urls?.[0]) ? (
-                              <a href={q.audio_url || q.media_urls[0]} download className="button secondary" style={{ padding: '4px 12px', borderRadius: 14, fontSize: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-                                ⬇ Download Audio
+                              <a
+                                href={q.audio_url || q.media_urls[0]}
+                                download={q.file_name || 'audio_message.mp3'}
+                                title="Download Audio"
+                                style={{ width: 34, height: 34, borderRadius: '50%', background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', textDecoration: 'none' }}
+                              >
+                                <IconDownload size={18} color="#16a34a" />
                               </a>
                             ) : (
                               <span className="badge-info" style={{ fontSize: 11.5 }}>Audio Attached</span>
@@ -166,19 +208,39 @@ export default function RegistrationDetail() {
                         </div>
                       )}
 
-                      {/* Photo Preview Thumbnail & Download Button for WhatsApp / Photo Attachment */}
+                      {/* Photo Attachment Card with Circular Icon-Only View and Download Buttons */}
                       {(q.service_type === 'whatsapp' || q.has_image || q.image_url || q.media_urls?.length > 0) && q.service_type !== 'voice' && (
                         <div style={{ marginBottom: 8 }}>
                           {(q.image_url || q.media_urls?.[0]) ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 12, maxWidth: 460, marginBottom: 8 }}>
-                              <img src={q.image_url || q.media_urls[0]} alt="Attached Photo" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff' }} />
+                              <img
+                                src={q.image_url || q.media_urls[0]}
+                                alt="Attached Photo"
+                                onClick={() => setPreviewImg(q.image_url || q.media_urls[0])}
+                                style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}
+                              />
                               <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0f172a' }}>Photo Attachment</div>
-                                <div className="muted" style={{ fontSize: 12 }}>Image Media File</div>
+                                <div className="muted" style={{ fontSize: 12 }}>{q.file_name || 'Image Media File'}</div>
                               </div>
-                              <a href={q.image_url || q.media_urls[0]} download target="_blank" rel="noreferrer" className="button secondary" style={{ padding: '5px 14px', borderRadius: 14, fontSize: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-                                ⬇ Download Photo
-                              </a>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <button
+                                  type="button"
+                                  title="View Photo"
+                                  onClick={() => setPreviewImg(q.image_url || q.media_urls[0])}
+                                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#eef2ff', border: '1px solid #c7d2fe', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                >
+                                  <IconView size={18} color="#4f46e5" />
+                                </button>
+                                <a
+                                  href={q.image_url || q.media_urls[0]}
+                                  download={q.file_name || 'photo_attachment.png'}
+                                  title="Download Photo"
+                                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', textDecoration: 'none' }}
+                                >
+                                  <IconDownload size={18} color="#16a34a" />
+                                </a>
+                              </div>
                             </div>
                           ) : (
                             <div className="muted" style={{ fontSize: 12.5, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -188,10 +250,56 @@ export default function RegistrationDetail() {
                         </div>
                       )}
 
-                      {/* Message Content Text Card */}
+                      {/* Message Content Text Card with Integrated Copy Button */}
                       {q.message_content ? (
-                        <div style={{ background: q.service_type === 'whatsapp' ? '#eefbf3' : '#f8fafc', border: q.service_type === 'whatsapp' ? '1px solid #a7f3d0' : '1px solid #e2e8f0', borderRadius: 10, padding: '10px 14px', fontSize: 13.5, color: '#1e293b', maxWidth: 500, lineHeight: 1.5 }}>
-                          {q.message_content}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'space-between',
+                          gap: 12,
+                          background: q.service_type === 'whatsapp' ? '#eefbf3' : '#f8fafc',
+                          border: q.service_type === 'whatsapp' ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
+                          borderRadius: 10,
+                          padding: '10px 14px',
+                          maxWidth: 460,
+                          boxSizing: 'border-box'
+                        }}>
+                          <span style={{ fontSize: 13.5, color: '#1e293b', lineHeight: 1.5, wordBreak: 'break-word', flex: 1 }}>
+                            {q.message_content}
+                          </span>
+                          <button
+                            type="button"
+                            title="Copy Message Text"
+                            onClick={() => handleCopy(q.message_content, idx)}
+                            style={{
+                              background: copiedIdx === idx ? '#dcfce7' : '#ffffff',
+                              border: copiedIdx === idx ? '1px solid #86efac' : '1px solid #cbd5e1',
+                              borderRadius: 6,
+                              padding: '5px 10px',
+                              fontSize: 11.5,
+                              fontWeight: 600,
+                              color: copiedIdx === idx ? '#16a34a' : '#475569',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              cursor: 'pointer',
+                              flexShrink: 0,
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            {copiedIdx === idx ? (
+                              <>
+                                <IconCheck size={14} color="#16a34a" />
+                                <span>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <IconCopy size={14} color="#64748b" />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
                         </div>
                       ) : (
                         (!q.media_urls?.length && !q.has_image && !q.has_audio ? <span className="muted">—</span> : null)
@@ -204,6 +312,29 @@ export default function RegistrationDetail() {
           </div>
         )}
       </div>
+
+      {/* Photo Preview Modal Popup */}
+      {previewImg && (
+        <div className="modal-overlay" onClick={() => setPreviewImg(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640, textAlign: 'center', padding: 20 }}>
+            <div className="modal-head" style={{ marginBottom: 14 }}>
+              <h2 style={{ margin: 0 }}>Photo Attachment Preview</h2>
+              <button className="modal-close" onClick={() => setPreviewImg(null)}>×</button>
+            </div>
+            <div style={{ background: '#0f172a', borderRadius: 12, padding: 12, display: 'inline-block', maxWidth: '100%' }}>
+              <img src={previewImg} alt="Photo Preview" style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: 8, objectFit: 'contain' }} />
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
+              <a href={previewImg} download="photo_attachment.png" className="button" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 20px', borderRadius: 20, background: '#16a34a', color: '#fff', textDecoration: 'none', fontWeight: 600 }}>
+                <IconDownload size={18} color="#fff" /> Download Photo
+              </a>
+              <button className="secondary" onClick={() => setPreviewImg(null)} style={{ borderRadius: 20, padding: '8px 20px' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
