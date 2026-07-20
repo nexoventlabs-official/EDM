@@ -1,1 +1,3 @@
 *.tar.gz
+deploy.bat
+deploy.ps1
