@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client.js';
 import Spinner from '../components/Spinner.jsx';
+import VoterDetailModal from '../components/VoterDetailModal.jsx';
 import { IconCall, IconMail, IconWhatsApp, IconView } from '../components/Icons.jsx';
 
 const fmt = (n) => Number(n || 0).toLocaleString('en-IN');
@@ -173,32 +174,7 @@ export default function WardHome() {
       )}
 
       {/* Voter Details Modal Popup */}
-      {detailVoter && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setDetailVoter(null); }}>
-          <div className="modal-box" style={{ maxWidth: 520 }}>
-            <div className="modal-head">
-              <h2>Voter Details — {detailVoter.EPIC_NO}</h2>
-              <button className="modal-close" onClick={() => setDetailVoter(null)}>×</button>
-            </div>
-            <div className="modal-body">
-              <table>
-                <tbody>
-                  <tr><th style={{ width: '38%' }}>EPIC NO</th><td><strong>{detailVoter.EPIC_NO}</strong></td></tr>
-                  <tr><th>FULL NAME</th><td>{detailVoter.VOTER_NAME_EN}</td></tr>
-                  <tr><th>RELATION NAME</th><td>{detailVoter.RELATION_NAME_EN} ({detailVoter.RELATION_TYPE || 'Relation'})</td></tr>
-                  <tr><th>AGE / GENDER</th><td>{detailVoter.AGE} yrs / {detailVoter.GENDER}</td></tr>
-                  <tr><th>MOBILE NUMBER</th><td>{detailVoter.MOBILE_NUMBER || '-'}</td></tr>
-                  <tr><th>PART / BOOTH NO</th><td>Part {detailVoter.PART_NO || 1}</td></tr>
-                  <tr><th>HOUSE NO</th><td>{detailVoter.HOUSE_NO || '-'}</td></tr>
-                </tbody>
-              </table>
-              <div style={{ textAlign: 'right', marginTop: 16 }}>
-                <button className="secondary" onClick={() => setDetailVoter(null)}>Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {detailVoter && <VoterDetailModal voter={detailVoter} onClose={() => setDetailVoter(null)} />}
     </div>
   );
 }

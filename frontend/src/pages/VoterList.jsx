@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import VoterDetailModal from '../components/VoterDetailModal.jsx';
 import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Spinner from '../components/Spinner.jsx';
@@ -179,23 +180,7 @@ export default function VoterList() {
         )}
       </div>
 
-      {detail && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setDetail(null); }}>
-          <div className="modal-box">
-            <div className="modal-head">
-              <h2>Voter Details — {detail.EPIC_NO}</h2>
-              <button className="modal-close" onClick={() => setDetail(null)}>×</button>
-            </div>
-            <div className="modal-body">
-              <table><tbody>
-                {Object.entries(detail).filter(([k]) => k !== '_id').map(([k, val]) => (
-                  <tr key={k}><th style={{ width: 220 }}>{k}</th><td>{typeof val === 'object' ? JSON.stringify(val) : String(val)}</td></tr>
-                ))}
-              </tbody></table>
-            </div>
-          </div>
-        </div>
-      )}
+      {detail && <VoterDetailModal voter={detail} onClose={() => setDetail(null)} />}
     </div>
   );
 }
