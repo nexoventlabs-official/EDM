@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Operations Manual — Andipatti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --accent: #c0392b;
+      --field-green: #1a5c38;
+      --field-green-light: rgba(26,92,56,0.08);
+      --field-green-border: rgba(26,92,56,0.25);
+      --muted: #6b6560;
+      --rule: #d4cfc5;
+      --high: #c0392b;
+      --med: #e67e22;
+      --low: #27ae60;
+      --card-bg: #faf7f2;
+      --stripe: #eee9df;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--field-green);
+      color: var(--paper);
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.025) 40px,
+        rgba(255,255,255,0.025) 41px
+      );
+    }
+    .masthead::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #e67e22, var(--accent));
+    }
+    .masthead-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 60px 52px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 40px;
+    }
+    .masthead-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .masthead-label .dot {
+      width: 8px; height: 8px;
+      background: #4caf50;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 6px #4caf50;
+    }
+    .masthead h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+    .masthead h1 em {
+      color: rgba(255,255,255,0.45);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 0.6em;
+      display: block;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .masthead-meta { text-align: right; }
+    .masthead-meta .for-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .audience-pills { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+    .pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 2px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* ── STAT BAR ── */
+    .stat-bar {
+      background: var(--ink);
+      color: #fff;
+    }
+    .stat-bar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 60px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .stat-item {
+      padding: 20px 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+    }
+    .stat-item:first-child { padding-left: 0; text-align: left; }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+      color: #fff;
+    }
+    .stat-num.green { color: #4caf50; }
+    .stat-lbl {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.5;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── TOC BAR ── */
+    .toc-bar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--rule);
+    }
+    .toc-bar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 60px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toc-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+    .toc-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--field-green);
+      text-decoration: none;
+      padding: 3px 10px;
+      border: 1px solid var(--field-green-border);
+      background: var(--field-green-light);
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .toc-link:hover { background: rgba(26,92,56,0.15); }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 52px 60px;
+    }
+
+    /* ── SECTION HEADING ── */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 26px;
+      margin-top: 52px;
+    }
+    .section-heading:first-of-type { margin-top: 0; }
+    .section-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--field-green);
+      letter-spacing: 0.15em;
+      background: var(--field-green-light);
+      border: 1px solid var(--field-green-border);
+      padding: 4px 10px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .section-heading h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ── ORG CHART ── */
+    .org-chart {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 32px;
+      text-align: center;
+    }
+    .org-level { display: flex; justify-content: center; gap: 12px; margin: 12px 0; }
+    .org-node {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 18px;
+      border: 1.5px solid;
+      border-radius: 2px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      min-width: 160px;
+    }
+    .org-node .org-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 400;
+      opacity: 0.7;
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+    .org-node.top { background: var(--field-green); color: #fff; border-color: var(--field-green); }
+    .org-node.mid { background: rgba(26,92,56,0.08); color: var(--field-green); border-color: var(--field-green-border); }
+    .org-node.bot { background: var(--stripe); color: var(--ink); border-color: var(--rule); }
+    .org-arrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      color: var(--rule);
+      margin: 4px 0;
+    }
+    .org-profile {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin-top: 0;
+    }
+    .org-profile-item {
+      padding: 14px 18px;
+      border-right: 1px solid var(--rule);
+      border-top: 1px solid var(--rule);
+      font-size: 0.84rem;
+    }
+    .org-profile-item:last-child, .org-profile-item:nth-child(3) { border-right: none; }
+    .org-profile-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .org-profile-val { font-weight: 600; }
+
+    /* ── DATA TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    .data-table thead tr { background: var(--ink); color: #fff; }
+    .data-table th {
+      padding: 11px 14px;
+      text-align: left;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .data-table th.num { text-align: right; }
+    .data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--stripe);
+      color: var(--ink);
+      vertical-align: middle;
+    }
+    .data-table td.num { text-align: right; font-family: 'DM Mono', monospace; font-size: 0.8rem; }
+    .data-table tbody tr:nth-child(even) { background: var(--stripe); }
+    .data-table tbody tr:hover { background: rgba(26,92,56,0.04); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 0.58rem;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-high { background: rgba(192,57,43,0.1); color: var(--high); border: 1px solid rgba(192,57,43,0.25); }
+    .badge-med  { background: rgba(230,126,34,0.1); color: var(--med);  border: 1px solid rgba(230,126,34,0.25); }
+    .badge-low  { background: rgba(39,174,96,0.1);  color: var(--low);  border: 1px solid rgba(39,174,96,0.25); }
+    .badge-opt  { background: rgba(26,92,56,0.1);   color: var(--field-green); border: 1px solid var(--field-green-border); }
+    .badge-under{ background: rgba(107,101,96,0.1); color: var(--muted); border: 1px solid rgba(107,101,96,0.25); }
+
+    /* ── PS CARDS ── */
+    .ps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .ps-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-top: 3px solid var(--rule);
+      overflow: hidden;
+    }
+    .ps-card.high { border-top-color: var(--high); }
+    .ps-card.med  { border-top-color: var(--med); }
+    .ps-card.low  { border-top-color: var(--low); }
+    .ps-card-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--stripe);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .ps-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+    .ps-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .ps-stat {
+      padding: 10px 20px;
+      border-right: 1px solid var(--stripe);
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.82rem;
+    }
+    .ps-stat:nth-child(2n) { border-right: none; }
+    .ps-stat:nth-last-child(-n+2) { border-bottom: none; }
+    .ps-stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .ps-stat-val { font-weight: 600; }
+    .ps-card-footer {
+      padding: 12px 20px;
+      background: var(--stripe);
+      border-top: 1px solid var(--rule);
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ps-card-footer strong { color: var(--ink); }
+
+    /* ── MINI BAR ── */
+    .mini-bar {
+      height: 4px;
+      background: var(--stripe);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+    .fill-green { background: var(--field-green); }
+    .fill-orange { background: var(--med); }
+    .fill-red { background: var(--high); }
+    .fill-gray { background: #bbb; }
+
+    /* ── TWO COLUMN ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    /* ── SUMMARY BOX ── */
+    .summary-box {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 24px;
+    }
+    .summary-box h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.85rem;
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-label { color: var(--muted); }
+    .kv-val { font-weight: 600; font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+
+    /* ── TOWNS TABLE ── */
+    .town-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .town-list { background: var(--card-bg); border: 1px solid var(--rule); }
+    .town-list h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--stripe);
+    }
+    .town-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.82rem;
+    }
+    .town-item:last-child { border-bottom: none; }
+    .town-rank {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--field-green);
+      font-weight: 600;
+      margin-right: 8px;
+      min-width: 20px;
+    }
+    .town-name { flex: 1; font-weight: 500; }
+    .town-voters {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── DAILY SCHEDULE ── */
+    .schedule-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); }
+    .schedule-col { border-right: 1px solid var(--rule); }
+    .schedule-col:last-child { border-right: none; }
+    .schedule-header {
+      padding: 14px 18px;
+      background: var(--ink);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .schedule-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.82rem;
+    }
+    .schedule-item:last-child { border-bottom: none; }
+    .schedule-time {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--field-green);
+      white-space: nowrap;
+      padding-top: 1px;
+      min-width: 56px;
+    }
+    .schedule-task { color: var(--ink); line-height: 1.45; }
+    .schedule-note {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* ── MOBILE COVERAGE TABLE ── */
+    .mobile-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.83rem;
+    }
+    .mobile-bar-row:last-child { border-bottom: none; }
+    .mobile-ps { min-width: 180px; font-weight: 500; }
+    .mobile-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      min-width: 42px;
+      text-align: right;
+      color: var(--muted);
+    }
+    .mobile-track { flex: 1; height: 6px; background: var(--stripe); border-radius: 1px; overflow: hidden; }
+    .mobile-fill { height: 100%; border-radius: 1px; background: var(--field-green); }
+    .mobile-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      min-width: 50px;
+      text-align: right;
+    }
+
+    /* ── ESCALATION ── */
+    .escalation { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); }
+    .esc-level {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .esc-level:last-child { border-bottom: none; }
+    .esc-badge {
+      min-width: 100px;
+      background: var(--ink);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 12px;
+      text-align: center;
+      writing-mode: horizontal-tb;
+    }
+    .esc-badge.l1 { background: var(--high); }
+    .esc-badge.l2 { background: var(--med); }
+    .esc-badge.l3 { background: var(--field-green); }
+    .esc-content {
+      flex: 1;
+      padding: 14px 20px;
+      font-size: 0.84rem;
+    }
+    .esc-route {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+    }
+    .esc-items { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 22px;
+    }
+    .kpi-period {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--field-green);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 8px;
+    }
+    .kpi-item {
+      padding: 6px 0;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.83rem;
+    }
+    .kpi-item:last-child { border-bottom: none; }
+    .kpi-label { color: var(--muted); font-size: 0.78rem; margin-bottom: 1px; }
+    .kpi-val { font-weight: 600; }
+
+    /* ── MATERIALS TABLE ── */
+    .materials-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ── CONTACT LIST ── */
+    .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .contact-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+    }
+    .contact-card-header {
+      padding: 12px 18px;
+      background: var(--stripe);
+      border-bottom: 1px solid var(--rule);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+    .contact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.83rem;
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-name { font-weight: 500; }
+    .contact-detail {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* ── FORM TEMPLATE ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+    }
+    .form-card-header {
+      padding: 14px 20px;
+      background: var(--field-green);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .form-field {
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.83rem;
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+    }
+    .form-field:last-child { border-bottom: none; }
+    .form-label { color: var(--muted); min-width: 160px; font-size: 0.78rem; }
+    .form-line {
+      flex: 1;
+      border-bottom: 1px solid var(--rule);
+      height: 18px;
+    }
+
+    /* ── POLLING STATION SUMMARY ── */
+    .ps-summary-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .ps-summary-card {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      text-align: center;
+    }
+    .ps-summary-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      display: block;
+      line-height: 1;
+    }
+    .ps-summary-num.green { color: var(--field-green); }
+    .ps-summary-num.orange { color: var(--med); }
+    .ps-summary-num.gray { color: var(--muted); }
+    .ps-summary-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--rule); margin: 44px 0; }
+
+    /* ── FOOTER ── */
+    .doc-footer { background: var(--ink); margin-top: 60px; }
+    .doc-footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.4);
+    }
+    .doc-footer .brand { color: rgba(255,255,255,0.7); font-weight: 500; }
+
+    /* ── ALERT BOX ── */
+    .alert-box {
+      padding: 16px 20px;
+      border-radius: 2px;
+      font-size: 0.85rem;
+      margin: 16px 0;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .alert-box.info { background: rgba(26,92,56,0.07); border: 1px solid var(--field-green-border); }
+    .alert-box.warn { background: rgba(230,126,34,0.07); border: 1px solid rgba(230,126,34,0.3); }
+    .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    @media (max-width: 860px) {
+      .masthead-inner, .stat-bar-inner, .toc-bar-inner, .page { padding-left: 20px; padding-right: 20px; }
+      .ps-grid, .two-col, .three-col, .town-grid, .kpi-grid, .form-grid, .contact-grid, .materials-grid { grid-template-columns: 1fr; }
+      .stat-bar-inner { grid-template-columns: repeat(3, 1fr); }
+      .masthead-inner { grid-template-columns: 1fr; }
+      .schedule-grid { grid-template-columns: 1fr; }
+      .ps-summary-row { flex-direction: column; }
+    }
+    @media print {
+      .masthead, .stat-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  
+  </style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="masthead-label">
+        <span class="dot"></span>
+        Field Document · Confidential · April 02, 2026
+      </div>
+      <h1>
+        <em>ASS 198 — Andipatti</em>
+        Field Operations<br>Manual
+      </h1>
+    </div>
+    <div class="masthead-meta">
+      <div class="for-label">Distributed To</div>
+      <div class="audience-pills">
+        <span class="pill">Field Coordinators</span>
+        <span class="pill">Team Leaders</span>
+        <span class="pill">Volunteers</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat-item">
+      <span class="stat-num green">254,549</span>
+      <span class="stat-lbl">Total Voters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">12</span>
+      <span class="stat-lbl">Police Stations</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">344</span>
+      <span class="stat-lbl">Polling Stations</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">50–60</span>
+      <span class="stat-lbl">Staff Required</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">200+</span>
+      <span class="stat-lbl">Volunteer Target</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">6 Wks</span>
+      <span class="stat-lbl">Campaign Duration</span>
+    </div>
+  </div>
+</div>
+
+<!-- TOC NAV -->
+<div class="toc-bar">
+  <div class="toc-bar-inner">
+    <span class="toc-label">Sections →</span>
+    <a class="toc-link" href="#s1">§1 Overview</a>
+    <a class="toc-link" href="#s2">§2 PS Breakdown</a>
+    <a class="toc-link" href="#s3">§3 Priority Towns</a>
+    <a class="toc-link" href="#s4">§4 Polling Stations</a>
+    <a class="toc-link" href="#s5">§5 Contact Database</a>
+    <a class="toc-link" href="#s6">§6 Daily Operations</a>
+    <a class="toc-link" href="#s7">§7 Resources</a>
+    <a class="toc-link" href="#s8">§8 Reporting</a>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- SECTION 1 -->
+  <div id="s1" class="section-heading">
+    <span class="section-num">§ 01</span>
+    <h2>Overview &amp; Team Structure</h2>
+  </div>
+
+  <div class="org-chart">
+    <div class="org-level">
+      <div class="org-node top">Constituency Coordinator<span class="org-sub">1 person — overall command</span></div>
+    </div>
+    <div class="org-arrow">↓</div>
+    <div class="org-level">
+      <div class="org-node mid">Police Station Coordinators<span class="org-sub">12 people — 1 per PS</span></div>
+    </div>
+    <div class="org-arrow">↓</div>
+    <div class="org-level">
+      <div class="org-node bot">Field Workers<span class="org-sub">40–50 people — 4–6 per PS</span></div>
+      <div class="org-node bot">Volunteers<span class="org-sub">200+ — 20 per PS</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <div class="summary-box">
+      <h3>Constituency Profile</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+        <div style="padding:10px 16px;border-right:1px solid var(--stripe);border-bottom:1px solid var(--stripe);">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">Constituency</div>
+          <div style="font-weight:600;">ASS 198 — Andipatti</div>
+        </div>
+        <div style="padding:10px 16px;border-right:1px solid var(--stripe);border-bottom:1px solid var(--stripe);">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">District</div>
+          <div style="font-weight:600;">THENI</div>
+        </div>
+        <div style="padding:10px 16px;border-bottom:1px solid var(--stripe);">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">Total Voters</div>
+          <div style="font-weight:600;">254,549</div>
+        </div>
+        <div style="padding:10px 16px;border-right:1px solid var(--stripe);">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">Police Stations</div>
+          <div style="font-weight:600;">12</div>
+        </div>
+        <div style="padding:10px 16px;border-right:1px solid var(--stripe);">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">Towns / Villages</div>
+          <div style="font-weight:600;">125</div>
+        </div>
+        <div style="padding:10px 16px;">
+          <div class="kv-label" style="font-family:'DM Mono',monospace;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:2px;">Polling Stations</div>
+          <div style="font-weight:600;">344</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div id="s2" class="section-heading">
+    <span class="section-num">§ 02</span>
+    <h2>Police Station-wise Breakdown</h2>
+  </div>
+
+  <div style="overflow-x:auto;margin-bottom:28px;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Police Station</th>
+          <th class="num">Total Voters</th>
+          <th class="num">Avg Age</th>
+          <th class="num">Male</th>
+          <th class="num">Female</th>
+          <th class="num">Youth &lt;30</th>
+          <th class="num">Senior 60+</th>
+          <th class="num">w/ Mobile</th>
+          <th class="num">Mobile %</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>ANDIPATTI</strong></td><td class="num">61,588</td><td class="num">44.6</td><td class="num">30,293</td><td class="num">31,283</td><td class="num">12,659</td><td class="num">11,475</td><td class="num">12,039</td><td class="num">19.5%</td><td><span class="badge badge-high">High</span></td></tr>
+        <tr><td><strong>GUDALUR NORTH</strong></td><td class="num">37,143</td><td class="num">45.7</td><td class="num">17,906</td><td class="num">19,237</td><td class="num">7,105</td><td class="num">7,979</td><td class="num">7,699</td><td class="num">20.7%</td><td><span class="badge badge-med">Medium</span></td></tr>
+        <tr><td><strong>RAJADHANI</strong></td><td class="num">36,495</td><td class="num">45.1</td><td class="num">17,860</td><td class="num">18,631</td><td class="num">7,228</td><td class="num">7,371</td><td class="num">5,917</td><td class="num">16.2%</td><td><span class="badge badge-med">Medium</span></td></tr>
+        <tr><td><strong>KADAMALAIGUNDU</strong></td><td class="num">27,543</td><td class="num">43.6</td><td class="num">13,730</td><td class="num">13,810</td><td class="num">5,903</td><td class="num">4,454</td><td class="num">5,876</td><td class="num">21.3%</td><td><span class="badge badge-med">Medium</span></td></tr>
+        <tr><td><strong>RAYAPPANPATTI</strong></td><td class="num">26,109</td><td class="num">45.4</td><td class="num">12,406</td><td class="num">13,697</td><td class="num">5,095</td><td class="num">5,209</td><td class="num">4,920</td><td class="num">18.8%</td><td><span class="badge badge-med">Medium</span></td></tr>
+        <tr><td><strong>GANDAMANUR</strong></td><td class="num">19,133</td><td class="num">44.9</td><td class="num">9,288</td><td class="num">9,837</td><td class="num">3,852</td><td class="num">3,678</td><td class="num">3,705</td><td class="num">19.4%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>VARUSANADU</strong></td><td class="num">12,757</td><td class="num">43.9</td><td class="num">6,429</td><td class="num">6,326</td><td class="num">2,505</td><td class="num">2,109</td><td class="num">1,972</td><td class="num">15.5%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>GANDAMANUR VILAKKU</strong></td><td class="num">11,323</td><td class="num">43.4</td><td class="num">5,657</td><td class="num">5,666</td><td class="num">2,546</td><td class="num">1,852</td><td class="num">1,952</td><td class="num">17.2%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>MAYILADUMPARAI</strong></td><td class="num">10,943</td><td class="num">44.6</td><td class="num">5,426</td><td class="num">5,516</td><td class="num">2,249</td><td class="num">1,990</td><td class="num">1,636</td><td class="num">15.0%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>GUDALUR SOUTH</strong></td><td class="num">5,694</td><td class="num">44.3</td><td class="num">2,737</td><td class="num">2,957</td><td class="num">1,165</td><td class="num">1,009</td><td class="num">1,121</td><td class="num">19.7%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>VAIGAIDAM</strong></td><td class="num">3,947</td><td class="num">44.3</td><td class="num">1,927</td><td class="num">2,020</td><td class="num">926</td><td class="num">774</td><td class="num">657</td><td class="num">16.6%</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td><strong>HIGHWAYVS</strong></td><td class="num">1,874</td><td class="num">45.2</td><td class="num">931</td><td class="num">943</td><td class="num">365</td><td class="num">300</td><td class="num">267</td><td class="num">14.2%</td><td><span class="badge badge-low">Low</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ps-summary-row">
+    <div class="ps-summary-card">
+      <span class="ps-summary-num green">1</span>
+      <span class="ps-summary-label">High Priority</span>
+    </div>
+    <div class="ps-summary-card">
+      <span class="ps-summary-num orange">4</span>
+      <span class="ps-summary-label">Medium Priority</span>
+    </div>
+    <div class="ps-summary-card">
+      <span class="ps-summary-num gray">7</span>
+      <span class="ps-summary-label">Low Priority</span>
+    </div>
+  </div>
+
+  <div class="ps-grid">
+    <!-- PS 1 -->
+    <div class="ps-card high">
+      <div class="ps-card-header">
+        <div><div class="ps-name">1. ANDIPATTI</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">79 polling stations</div></div>
+        <span class="badge badge-high">High Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">61,588 (24.2%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">12,039 (19.5%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:19.5%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">12,659 (20.6%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">11,475 (18.6%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">12 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">1,466 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: ANDIPATTI (26,024), T.SUBBULAPURAM (5,224)</span><strong>Budget: 24.2%</strong></div>
+    </div>
+    <!-- PS 2 -->
+    <div class="ps-card med">
+      <div class="ps-card-header">
+        <div><div class="ps-name">2. GUDALUR NORTH</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">49 polling stations</div></div>
+        <span class="badge badge-med">Medium Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">37,143 (14.6%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">7,699 (20.7%) ✓</div><div class="mini-bar"><div class="mini-bar-fill fill-green" style="width:20.7%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">7,105 (19.1%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">7,979 (21.5%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">7 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">884 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: GUDALUR (33,438), KARUNAKKAMUTHANPATTI (3,860)</span><strong>Budget: 14.6%</strong></div>
+    </div>
+    <!-- PS 3 -->
+    <div class="ps-card med">
+      <div class="ps-card-header">
+        <div><div class="ps-name">3. RAJADHANI</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">47 polling stations</div></div>
+        <span class="badge badge-med">Medium Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">36,495 (14.3%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">5,917 (16.2%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:16.2%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">7,228 (19.8%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">7,371 (20.2%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">7 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">868 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KANNIYAPPAPILLAIPATTI (3,618), PALAKOMBAI (3,005)</span><strong>Budget: 14.3%</strong></div>
+    </div>
+    <!-- PS 4 -->
+    <div class="ps-card med">
+      <div class="ps-card-header">
+        <div><div class="ps-name">4. KADAMALAIGUNDU</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">37 polling stations</div></div>
+        <span class="badge badge-med">Medium Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">27,543 (10.8%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">5,876 (21.3%) ✓</div><div class="mini-bar"><div class="mini-bar-fill fill-green" style="width:21.3%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">5,903 (21.4%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">4,454 (16.2%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">5 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">655 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KADAMALAIGUNDU (6,672), THANGAMMALPURAM (2,319)</span><strong>Budget: 10.8%</strong></div>
+    </div>
+    <!-- PS 5 -->
+    <div class="ps-card med">
+      <div class="ps-card-header">
+        <div><div class="ps-name">5. RAYAPPANPATTI</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">35 polling stations</div></div>
+        <span class="badge badge-med">Medium Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">26,109 (10.3%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">4,920 (18.8%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:18.8%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">5,095 (19.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">5,209 (20.0%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">5 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">621 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KAMAYAGOWNDANPATTI (13,758), SURULIPATTI (6,378)</span><strong>Budget: 10.3%</strong></div>
+    </div>
+    <!-- PS 6 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">6. GANDAMANUR</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">27 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">19,133 (7.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">3,705 (19.4%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:19.4%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">3,852 (20.1%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">3,678 (19.2%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">3 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">455 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: GANDAMANUR (6,081), RAJENDRANAGAR (1,939)</span><strong>Budget: 7.5%</strong></div>
+    </div>
+    <!-- PS 7 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">7. VARUSANADU</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">18 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">12,757 (5.0%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">1,972 (15.5%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:15.5%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">2,505 (19.6%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">2,109 (16.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">2 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">303 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: VARUSANADU (3,825), MURUKKODAI (1,717)</span><strong>Budget: 5.0%</strong></div>
+    </div>
+    <!-- PS 8 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">8. GANDAMANUR VILAKKU</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">16 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">11,323 (4.4%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">1,952 (17.2%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:17.2%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">2,546 (22.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">1,852 (16.4%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">2 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">269 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KUNNUR (2,417), AMMACHIYAPURAM (2,274)</span><strong>Budget: 4.4%</strong></div>
+    </div>
+    <!-- PS 9 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">9. MAYILADUMPARAI</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">14 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">10,943 (4.3%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">1,636 (15.0%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:15.0%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">2,249 (20.6%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">1,990 (18.2%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">2 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">260 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KUMANANTHOZHU (3,219), MAYILADUMPARAI (2,925)</span><strong>Budget: 4.3%</strong></div>
+    </div>
+    <!-- PS 10 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">10. GUDALUR SOUTH</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">9 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">5,694 (2.2%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">1,121 (19.7%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:19.7%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">1,165 (20.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">1,009 (17.7%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">1 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">135 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: KULLAPPAGOUNDANPATTI (2,964), SURILIYARU POWER STATION (248)</span><strong>Budget: 2.2%</strong></div>
+    </div>
+    <!-- PS 11 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">11. VAIGAIDAM</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">5 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">3,947 (1.6%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">657 (16.6%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:16.6%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">926 (23.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">774 (19.6%) ↑</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">1 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">93 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: RENGASAMUTHIRAM (1,762), SRIRENGAPURAM (924)</span><strong>Budget: 1.6%</strong></div>
+    </div>
+    <!-- PS 12 -->
+    <div class="ps-card low">
+      <div class="ps-card-header">
+        <div><div class="ps-name">12. HIGHWAYVS</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">8 polling stations</div></div>
+        <span class="badge badge-low">Low Priority</span>
+      </div>
+      <div class="ps-card-body">
+        <div class="ps-stat"><div class="ps-stat-label">Total Voters</div><div class="ps-stat-val">1,874 (0.7%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Mobile Coverage</div><div class="ps-stat-val">267 (14.2%) </div><div class="mini-bar"><div class="mini-bar-fill fill-orange" style="width:14.2%"></div></div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Youth &lt;30</div><div class="ps-stat-val">365 (19.5%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Seniors 60+</div><div class="ps-stat-val">300 (16.0%)</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Staff Required</div><div class="ps-stat-val">1 field workers</div></div>
+        <div class="ps-stat"><div class="ps-stat-label">Daily Target</div><div class="ps-stat-val">44 voters/day</div></div>
+      </div>
+      <div class="ps-card-footer"><span>Top towns: HIGHWAYVS (2,071), KARTANA ESTATE (49)</span><strong>Budget: 0.7%</strong></div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 3 -->
+  <div id="s3" class="section-heading">
+    <span class="section-num">§ 03</span>
+    <h2>Priority Towns — Top 30</h2>
+  </div>
+  <div class="town-grid">
+    <div class="town-list">
+      <h3>Rank 1–10</h3>
+      <div class="town-item"><span class="town-rank">01</span><span class="town-name">GUDALUR</span><span class="town-voters">33,438</span></div>
+      <div class="town-item"><span class="town-rank">02</span><span class="town-name">ANDIPATTI</span><span class="town-voters">26,024</span></div>
+      <div class="town-item"><span class="town-rank">03</span><span class="town-name">KAMAYAGOWNDANPATTI</span><span class="town-voters">13,758</span></div>
+      <div class="town-item"><span class="town-rank">04</span><span class="town-name">KADAMALAIGUNDU</span><span class="town-voters">6,672</span></div>
+      <div class="town-item"><span class="town-rank">05</span><span class="town-name">SURULIPATTI</span><span class="town-voters">6,378</span></div>
+      <div class="town-item"><span class="town-rank">06</span><span class="town-name">GANDAMANUR</span><span class="town-voters">6,081</span></div>
+      <div class="town-item"><span class="town-rank">07</span><span class="town-name">NARAYANATHEVANPATTI</span><span class="town-voters">5,722</span></div>
+      <div class="town-item"><span class="town-rank">08</span><span class="town-name">T.SUBBULAPURAM</span><span class="town-voters">5,224</span></div>
+      <div class="town-item"><span class="town-rank">09</span><span class="town-name">KARUNAKKAMUTHANPATTI</span><span class="town-voters">3,860</span></div>
+      <div class="town-item"><span class="town-rank">10</span><span class="town-name">VARUSANADU</span><span class="town-voters">3,825</span></div>
+    </div>
+    <div class="town-list">
+      <h3>Rank 11–20</h3>
+      <div class="town-item"><span class="town-rank">11</span><span class="town-name">KANNIYAPPAPILLAIPATTI</span><span class="town-voters">3,618</span></div>
+      <div class="town-item"><span class="town-rank">12</span><span class="town-name">KUMANANTHOZHU</span><span class="town-voters">3,219</span></div>
+      <div class="town-item"><span class="town-rank">13</span><span class="town-name">PALAKOMBAI</span><span class="town-voters">3,005</span></div>
+      <div class="town-item"><span class="town-rank">14</span><span class="town-name">KULLAPPAGOUNDANPATTI</span><span class="town-voters">2,964</span></div>
+      <div class="town-item"><span class="town-rank">15</span><span class="town-name">MAYILADUMPARAI</span><span class="town-voters">2,925</span></div>
+      <div class="town-item"><span class="town-rank">16</span><span class="town-name">T.BOMMINAYAKANPATTI</span><span class="town-voters">2,862</span></div>
+      <div class="town-item"><span class="town-rank">17</span><span class="town-name">PITCHAMPATTI</span><span class="town-voters">2,539</span></div>
+      <div class="town-item"><span class="town-rank">18</span><span class="town-name">SITHARPATTI</span><span class="town-voters">2,508</span></div>
+      <div class="town-item"><span class="town-rank">19</span><span class="town-name">KUNNUR</span><span class="town-voters">2,417</span></div>
+      <div class="town-item"><span class="town-rank">20</span><span class="town-name">THANGAMMALPURAM</span><span class="town-voters">2,319</span></div>
+    </div>
+    <div class="town-list">
+      <h3>Rank 21–30</h3>
+      <div class="town-item"><span class="town-rank">21</span><span class="town-name">AMMACHIYAPURAM</span><span class="town-voters">2,274</span></div>
+      <div class="town-item"><span class="town-rank">22</span><span class="town-name">HIGHWAYVS</span><span class="town-voters">2,071</span></div>
+      <div class="town-item"><span class="town-rank">23</span><span class="town-name">SHANMUGASUNDARAPURAM</span><span class="town-voters">1,983</span></div>
+      <div class="town-item"><span class="town-rank">24</span><span class="town-name">ETHAKOVIL</span><span class="town-voters">1,942</span></div>
+      <div class="town-item"><span class="town-rank">25</span><span class="town-name">RAJENDRANAGAR</span><span class="town-voters">1,939</span></div>
+      <div class="town-item"><span class="town-rank">26</span><span class="town-name">MUTHANAMPATTI</span><span class="town-voters">1,900</span></div>
+      <div class="town-item"><span class="town-rank">27</span><span class="town-name">MARAVAPATTI</span><span class="town-voters">1,828</span></div>
+      <div class="town-item"><span class="town-rank">28</span><span class="town-name">M.SUBBULAPURAM</span><span class="town-voters">1,810</span></div>
+      <div class="town-item"><span class="town-rank">29</span><span class="town-name">BALASAMUTHIRAM</span><span class="town-voters">1,799</span></div>
+      <div class="town-item"><span class="town-rank">30</span><span class="town-name">RENGASAMUTHIRAM</span><span class="town-voters">1,762</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div id="s4" class="section-heading">
+    <span class="section-num">§ 04</span>
+    <h2>Polling Station Assignments</h2>
+  </div>
+
+  <div class="ps-summary-row">
+    <div class="ps-summary-card">
+      <span class="ps-summary-num green">0</span>
+      <span class="ps-summary-label">Optimal (500-1500)</span>
+    </div>
+    <div class="ps-summary-card">
+      <span class="ps-summary-num orange">0</span>
+      <span class="ps-summary-label">Under-capacity (&lt;500)</span>
+    </div>
+    <div class="ps-summary-card">
+      <span class="ps-summary-num gray">12</span>
+      <span class="ps-summary-label">Over-capacity (&gt;1500)</span>
+    </div>
+  </div>
+
+  <div class="alert-box info">
+    <span class="alert-icon">ℹ️</span>
+    <div>
+      <strong>Polling Station Strategy:</strong> Focus on optimal-capacity stations first. 
+      Under-capacity stations may need consolidation. Over-capacity stations require extra staff and resources.
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div id="s5" class="section-heading">
+    <span class="section-num">§ 05</span>
+    <h2>Contact Database Strategy</h2>
+  </div>
+
+  <div class="two-col">
+    <div class="summary-box">
+      <h3>Mobile Coverage by Police Station</h3>
+      <div class="mobile-bar-row"><span class="mobile-ps">KADAMALAIGUNDU</span><div class="mobile-track"><div class="mobile-fill" style="width:85%"></div></div><span class="mobile-pct">21.3%</span><span class="mobile-num">5,876</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">GUDALUR NORTH</span><div class="mobile-track"><div class="mobile-fill" style="width:82%"></div></div><span class="mobile-pct">20.7%</span><span class="mobile-num">7,699</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">GUDALUR SOUTH</span><div class="mobile-track"><div class="mobile-fill" style="width:78%"></div></div><span class="mobile-pct">19.7%</span><span class="mobile-num">1,121</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">ANDIPATTI</span><div class="mobile-track"><div class="mobile-fill" style="width:78%"></div></div><span class="mobile-pct">19.5%</span><span class="mobile-num">12,039</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">GANDAMANUR</span><div class="mobile-track"><div class="mobile-fill" style="width:77%"></div></div><span class="mobile-pct">19.4%</span><span class="mobile-num">3,705</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">RAYAPPANPATTI</span><div class="mobile-track"><div class="mobile-fill" style="width:75%"></div></div><span class="mobile-pct">18.8%</span><span class="mobile-num">4,920</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">GANDAMANUR VILAKKU</span><div class="mobile-track"><div class="mobile-fill" style="width:68%"></div></div><span class="mobile-pct">17.2%</span><span class="mobile-num">1,952</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">VAIGAIDAM</span><div class="mobile-track"><div class="mobile-fill" style="width:66%"></div></div><span class="mobile-pct">16.6%</span><span class="mobile-num">657</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">RAJADHANI</span><div class="mobile-track"><div class="mobile-fill" style="width:64%"></div></div><span class="mobile-pct">16.2%</span><span class="mobile-num">5,917</span></div>
+      <div class="mobile-bar-row"><span class="mobile-ps">VARUSANADU</span><div class="mobile-track"><div class="mobile-fill" style="width:62%"></div></div><span class="mobile-pct">15.5%</span><span class="mobile-num">1,972</span></div>
+    </div>
+    <div class="summary-box">
+      <h3>Contact Strategy</h3>
+      <div class="kv-row"><span class="kv-label">Total Voters</span><span class="kv-val">254,549</span></div>
+      <div class="kv-row"><span class="kv-label">With Mobile</span><span class="kv-val">47,761 (18.8%)</span></div>
+      <div class="kv-row"><span class="kv-label">Without Mobile</span><span class="kv-val">206,788 (81.2%)</span></div>
+      <div class="kv-row"><span class="kv-label">SMS Campaign</span><span class="kv-val">Primary</span></div>
+      <div class="kv-row"><span class="kv-label">WhatsApp Groups</span><span class="kv-val">Secondary</span></div>
+      <div class="kv-row"><span class="kv-label">Door-to-door</span><span class="kv-val">Essential</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div id="s6" class="section-heading">
+    <span class="section-num">§ 06</span>
+    <h2>Daily Operations Guide</h2>
+  </div>
+
+  <div class="schedule-grid">
+    <div class="schedule-col">
+      <div class="schedule-header">Morning (6 AM – 12 PM)</div>
+      <div class="schedule-item"><span class="schedule-time">06:00</span><span class="schedule-task">Team briefing &amp; assignments</span></div>
+      <div class="schedule-item"><span class="schedule-time">07:00</span><span class="schedule-task">Door-to-door begins</span></div>
+      <div class="schedule-item"><span class="schedule-time">09:00</span><span class="schedule-task">Public meeting prep</span></div>
+      <div class="schedule-item"><span class="schedule-time">11:00</span><span class="schedule-task">Mid-morning check-in</span></div>
+    </div>
+    <div class="schedule-col">
+      <div class="schedule-header">Afternoon (12 PM – 6 PM)</div>
+      <div class="schedule-item"><span class="schedule-time">12:00</span><span class="schedule-task">Lunch break &amp; data entry</span></div>
+      <div class="schedule-item"><span class="schedule-time">14:00</span><span class="schedule-task">Afternoon outreach</span></div>
+      <div class="schedule-item"><span class="schedule-time">16:00</span><span class="schedule-task">Public meeting (if scheduled)</span></div>
+      <div class="schedule-item"><span class="schedule-time">17:30</span><span class="schedule-task">Evening prep</span></div>
+    </div>
+    <div class="schedule-col">
+      <div class="schedule-header">Evening (6 PM – 9 PM)</div>
+      <div class="schedule-item"><span class="schedule-time">18:00</span><span class="schedule-task">Evening door-to-door</span></div>
+      <div class="schedule-item"><span class="schedule-time">19:00</span><span class="schedule-task">Community meetings</span></div>
+      <div class="schedule-item"><span class="schedule-time">20:00</span><span class="schedule-task">Day summary &amp; reporting</span></div>
+      <div class="schedule-item"><span class="schedule-time">21:00</span><span class="schedule-task">Next day planning</span></div>
+    </div>
+  </div>
+
+  <div class="alert-box info" style="margin-top:20px;">
+    <span class="alert-icon">📋</span>
+    <div>
+      <strong>Daily Target:</strong> Each field worker should contact 100-150 voters per day. 
+      Track progress hourly and adjust strategy as needed.
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div id="s7" class="section-heading">
+    <span class="section-num">§ 07</span>
+    <h2>Resource Management</h2>
+  </div>
+
+  <div class="materials-grid">
+    <div class="summary-box">
+      <h3>Campaign Materials</h3>
+      <div class="kv-row"><span class="kv-label">Pamphlets</span><span class="kv-val">50,000 units</span></div>
+      <div class="kv-row"><span class="kv-label">Posters</span><span class="kv-val">5,000 units</span></div>
+      <div class="kv-row"><span class="kv-label">Banners</span><span class="kv-val">200 units</span></div>
+      <div class="kv-row"><span class="kv-label">ID Cards</span><span class="kv-val">250 units</span></div>
+      <div class="kv-row"><span class="kv-label">Volunteer Kits</span><span class="kv-val">200 units</span></div>
+    </div>
+    <div class="summary-box">
+      <h3>Equipment Needs</h3>
+      <div class="kv-row"><span class="kv-label">Mobile Phones</span><span class="kv-val">60 units</span></div>
+      <div class="kv-row"><span class="kv-label">Tablets</span><span class="kv-val">20 units</span></div>
+      <div class="kv-row"><span class="kv-label">Vehicles</span><span class="kv-val">15 units</span></div>
+      <div class="kv-row"><span class="kv-label">PA Systems</span><span class="kv-val">10 units</span></div>
+      <div class="kv-row"><span class="kv-label">Generators</span><span class="kv-val">5 units</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div id="s8" class="section-heading">
+    <span class="section-num">§ 08</span>
+    <h2>Reporting &amp; Escalation</h2>
+  </div>
+
+  <div class="escalation">
+    <div class="esc-level">
+      <div class="esc-badge l1">Level 1<br>Immediate</div>
+      <div class="esc-content">
+        <div class="esc-route">Field Worker → Team Leader (within 1 hour)</div>
+        <div class="esc-items">Minor issues · Daily progress · Resource requests · Voter feedback</div>
+      </div>
+    </div>
+    <div class="esc-level">
+      <div class="esc-badge l2">Level 2<br>Urgent</div>
+      <div class="esc-content">
+        <div class="esc-route">Team Leader → PS Coordinator (within 4 hours)</div>
+        <div class="esc-items">Major obstacles · Security concerns · Resource shortages · Strategy adjustments</div>
+      </div>
+    </div>
+    <div class="esc-level">
+      <div class="esc-badge l3">Level 3<br>Critical</div>
+      <div class="esc-content">
+        <div class="esc-route">PS Coordinator → Constituency Coordinator (immediate)</div>
+        <div class="esc-items">Emergency situations · Legal issues · Major incidents · Campaign-wide decisions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-grid" style="margin-top:28px;">
+    <div class="contact-card">
+      <div class="contact-card-header">Emergency Contacts</div>
+      <div class="contact-row"><span class="contact-name">Campaign Manager</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Legal Advisor</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Security Head</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Medical Support</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-card-header">Police Station Coordinators</div>
+      <div class="contact-row"><span class="contact-name">1. [PS Name]</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">2. [PS Name]</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">3. [PS Name]</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">4. [PS Name]</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">5. [PS Name]</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+    </div>
+  </div>
+
+  <!-- APPENDIX A -->
+  <div class="section-heading">
+    <span class="section-num">Appendix A</span>
+    <h2>Contact Lists</h2>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="contact-card-header">Police Station Coordinators</div>
+      <div class="contact-row"><span class="contact-name">1. ANDIPATTI</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">2. GUDALUR NORTH</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">3. RAJADHANI</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">4. KADAMALAIGUNDU</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">5. RAYAPPANPATTI</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">6. GANDAMANUR</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">7. VARUSANADU</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">8. GANDAMANUR VILAKKU</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">9. MAYILADUMPARAI</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">10. GUDALUR SOUTH</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">11. VAIGAIDAM</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">12. HIGHWAYVS</span><span class="contact-detail">[Name] — [Mobile]</span></div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-card-header">Emergency Contacts</div>
+      <div class="contact-row"><span class="contact-name">Constituency Coordinator</span><span class="contact-detail">[Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Campaign Manager</span><span class="contact-detail">[Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Data Team</span><span class="contact-detail">[Mobile]</span></div>
+      <div class="contact-row"><span class="contact-name">Resource Manager</span><span class="contact-detail">[Mobile]</span></div>
+    </div>
+  </div>
+
+  <!-- APPENDIX C: FORMS -->
+  <div class="section-heading" style="margin-top:40px;">
+    <span class="section-num">Appendix C</span>
+    <h2>Forms &amp; Templates</h2>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-card">
+      <div class="form-card-header">Daily Report Form</div>
+      <div class="form-field"><span class="form-label">Date</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Field Worker Name</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Area Covered</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Voters Contacted</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Materials Distributed</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Issues Identified</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Next Day Plan</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Signature</span><div class="form-line"></div></div>
+    </div>
+    <div class="form-card">
+      <div class="form-card-header">Weekly Summary Form</div>
+      <div class="form-field"><span class="form-label">Week No.</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">PS Coordinator</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Total Voters Contacted</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Coverage %</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Public Meetings</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Volunteers Recruited</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Challenges</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Resource Needs</span><div class="form-line"></div></div>
+      <div class="form-field"><span class="form-label">Signature</span><div class="form-line"></div></div>
+    </div>
+  </div>
+
+  <div class="alert-box warn" style="margin-top:28px;">
+    <span class="alert-icon">⚠️</span>
+    <span>This manual should be used alongside the <strong>Candidate Briefing</strong> (strategy overview) and the <strong>Complete Data Package</strong> (detailed analysis). For questions contact the Constituency Coordinator.</span>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <div class="doc-footer-inner">
+    <div>
+      <span class="brand">FIELD OPERATIONS MANUAL — ASS 198 ANDIPATTI</span><br>
+      Version 1.0 · Update Schedule: Weekly or as needed · Status: Ready for Field Use
+    </div>
+    <div style="text-align:right;">
+      Generated: April 02, 2026 · 07:43 PM<br>
+      Data Source: ASS 198.xlsx · 254,549 voters
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Briefing — Hosur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --accent: #c0392b;
+      --gold: #b8860b;
+      --muted: #6b6560;
+      --rule: #d4cfc5;
+      --high: #c0392b;
+      --med: #e67e22;
+      --low: #27ae60;
+      --card-bg: #faf7f2;
+      --stripe: #eee9df;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.025) 40px,
+        rgba(255,255,255,0.025) 41px
+      );
+    }
+    .masthead-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 60px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 40px;
+    }
+    .masthead-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .masthead-label::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--accent);
+    }
+    .masthead h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.05;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+    .masthead h1 span {
+      color: var(--accent);
+    }
+    .masthead-meta {
+      text-align: right;
+    }
+    .masthead-meta .date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .masthead-meta .voters-big {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .masthead-meta .voters-label {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-top: 4px;
+    }
+
+    /* ── STAT BAR ── */
+    .stat-bar {
+      background: var(--accent);
+      color: #fff;
+    }
+    .stat-bar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 60px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .stat-item {
+      padding: 22px 0;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      padding-right: 20px;
+      padding-left: 20px;
+      text-align: center;
+    }
+    .stat-item:first-child { padding-left: 0; text-align: left; }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+    }
+    .stat-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.75;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 60px;
+    }
+
+    /* ── SECTION HEADING ── */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+      margin-top: 52px;
+    }
+    .section-heading:first-of-type { margin-top: 0; }
+    .section-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      background: rgba(192,57,43,0.08);
+      border: 1px solid rgba(192,57,43,0.2);
+      padding: 4px 10px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .section-heading h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--ink);
+    }
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ── RECOMMENDATION CARDS ── */
+    .reco-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 8px;
+    }
+    .reco-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-top: 3px solid var(--accent);
+      padding: 28px 24px;
+      position: relative;
+    }
+    .reco-card .reco-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: rgba(192,57,43,0.1);
+      line-height: 1;
+      position: absolute;
+      top: 16px;
+      right: 20px;
+    }
+    .reco-card h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .reco-card p {
+      font-size: 0.88rem;
+      color: var(--ink);
+      line-height: 1.65;
+    }
+    .reco-card ul {
+      list-style: none;
+      margin: 8px 0 0;
+    }
+    .reco-card ul li {
+      font-size: 0.84rem;
+      color: var(--muted);
+      padding: 3px 0;
+      padding-left: 14px;
+      position: relative;
+    }
+    .reco-card ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    /* ── TWO-COL SUMMARY ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .summary-box {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 28px;
+    }
+    .summary-box h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 10px;
+      margin-bottom: 18px;
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.88rem;
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-label { color: var(--muted); }
+    .kv-val {
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--ink);
+    }
+
+    /* ── PRIORITY TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+    .data-table thead tr {
+      background: var(--ink);
+      color: #fff;
+    }
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .data-table th.num { text-align: right; }
+    .data-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--stripe);
+      color: var(--ink);
+      vertical-align: middle;
+    }
+    .data-table td.num { text-align: right; font-family: 'DM Mono', monospace; }
+    .data-table tbody tr:nth-child(even) { background: var(--stripe); }
+    .data-table tbody tr:hover { background: rgba(192,57,43,0.04); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 2px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge-high { background: rgba(192,57,43,0.12); color: var(--high); border: 1px solid rgba(192,57,43,0.25); }
+    .badge-med  { background: rgba(230,126,34,0.12); color: var(--med);  border: 1px solid rgba(230,126,34,0.25); }
+    .badge-low  { background: rgba(39,174,96,0.12);  color: var(--low);  border: 1px solid rgba(39,174,96,0.25); }
+
+    .rank-dot {
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      background: var(--ink);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .rank-dot.top { background: var(--accent); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-row { margin: 8px 0; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 5px;
+    }
+    .progress-name { color: var(--ink); font-weight: 500; }
+    .progress-pct { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 0.78rem; }
+    .progress-track {
+      height: 6px;
+      background: var(--stripe);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width 0.8s ease;
+    }
+    .progress-fill.med { background: var(--med); }
+    .progress-fill.low { background: #aaa; }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 36px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--rule);
+    }
+    .tl-item { position: relative; margin-bottom: 28px; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: -30px;
+      top: 4px;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border: 3px solid var(--paper);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .tl-dot.step2 { background: var(--med); box-shadow: 0 0 0 2px var(--med); }
+    .tl-dot.step3 { background: #555; box-shadow: 0 0 0 2px #555; }
+    .tl-week {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-week.s2 { color: var(--med); }
+    .tl-week.s3 { color: var(--muted); }
+    .tl-item h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .tl-item ul {
+      list-style: none;
+    }
+    .tl-item ul li {
+      font-size: 0.84rem;
+      color: var(--muted);
+      padding: 2px 0 2px 14px;
+      position: relative;
+    }
+    .tl-item ul li::before {
+      content: '·';
+      position: absolute;
+      left: 4px;
+      color: var(--accent);
+      font-size: 1.2rem;
+      line-height: 0.8;
+      top: 5px;
+    }
+
+    /* ── DEMOGRAPHIC GRID ── */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 26px;
+    }
+    .demo-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .demo-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .demo-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .demo-card ul { list-style: none; }
+    .demo-card ul li {
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 3px 0 3px 14px;
+      position: relative;
+      border-bottom: 1px solid var(--stripe);
+    }
+    .demo-card ul li:last-child { border-bottom: none; }
+    .demo-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; }
+
+    /* ── INSIGHTS ── */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .insight-card {
+      padding: 26px;
+      border: 1px solid;
+    }
+    .insight-card.strengths { background: rgba(39,174,96,0.06); border-color: rgba(39,174,96,0.25); }
+    .insight-card.challenges { background: rgba(230,126,34,0.06); border-color: rgba(230,126,34,0.25); }
+    .insight-card.opportunities { background: rgba(52,152,219,0.06); border-color: rgba(52,152,219,0.25); }
+    .insight-card h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 14px;
+    }
+    .insight-card.strengths h3 { color: #27ae60; }
+    .insight-card.challenges h3 { color: var(--med); }
+    .insight-card.opportunities h3 { color: #2980b9; }
+    .insight-card ul { list-style: none; }
+    .insight-card ul li {
+      font-size: 0.84rem;
+      color: var(--ink);
+      padding: 5px 0 5px 22px;
+      position: relative;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .insight-card ul li:last-child { border-bottom: none; }
+    .insight-card ul li .ico {
+      position: absolute;
+      left: 0;
+    }
+
+    /* ── CHECKLIST ── */
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .checklist-col h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .check-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--stripe);
+      font-size: 0.84rem;
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-box {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── METRICS ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .metric-box {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      padding: 26px;
+    }
+    .metric-box h3 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 10px;
+    }
+
+    /* ── QUICK REFERENCE ── */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ── FOOTER ── */
+    .doc-footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.45);
+      margin-top: 60px;
+    }
+    .doc-footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+    }
+    .doc-footer .brand {
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 44px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .masthead-inner, .stat-bar-inner, .page { padding-left: 24px; padding-right: 24px; }
+      .reco-grid, .demo-grid, .insights-grid, .checklist-grid, .quick-grid { grid-template-columns: 1fr; }
+      .stat-bar-inner { grid-template-columns: repeat(3, 1fr); }
+      .summary-grid, .metrics-grid { grid-template-columns: 1fr; }
+      .masthead-inner { grid-template-columns: 1fr; }
+      .masthead-meta { text-align: left; }
+    }
+
+    @media print {
+      body { background: white; }
+      .masthead { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .stat-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  
+  </style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="masthead-label">Confidential · Strategic Document · April 02, 2026</div>
+      <h1>Candidate<br>Briefing<br><span>Hosur</span></h1>
+    </div>
+    <div class="masthead-meta">
+      <div class="date">ASS 55 — KRISHNAGIRI District</div>
+      <div class="voters-big">338,289</div>
+      <div class="voters-label">Total Registered Voters</div>
+    </div>
+  </div>
+</header>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat-item">
+      <span class="stat-num">50.0%</span>
+      <span class="stat-lbl">Women Voters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">21.0%</span>
+      <span class="stat-lbl">Youth (&lt;30)</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">14.3%</span>
+      <span class="stat-lbl">Seniors (60+)</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">445</span>
+      <span class="stat-lbl">Polling Stations</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">49</span>
+      <span class="stat-lbl">Towns / Villages</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">35%</span>
+      <span class="stat-lbl">Mobile Coverage</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page">
+
+  <!-- TOP RECOMMENDATIONS -->
+  <div class="section-heading">
+    <span class="section-num">§ 01</span>
+    <h2>Top Recommendations</h2>
+  </div>
+  <div class="reco-grid">
+    <div class="reco-card">
+      <div class="reco-n">1</div>
+      <h3>High-Impact Areas</h3>
+      <p>Top 3 police stations cover <strong>67.9%</strong> of all voters. Allocate half your resources here first.</p>
+      <ul>
+        <li>HOSUR TOWN — 91,348 voters</li>
+        <li>SIPCOT CIRCLE — 73,254 voters</li>
+        <li>HUDCO — 65,180 voters</li>
+        <li>Top 20 towns = 40% of electorate</li>
+      </ul>
+    </div>
+    <div class="reco-card">
+      <div class="reco-n">2</div>
+      <h3>Digital + Traditional Mix</h3>
+      <p>Only 35% mobile coverage means door-to-door is non-negotiable. Use a <strong>20/80 split</strong>.</p>
+      <ul>
+        <li>SMS: 120,256 reachable voters</li>
+        <li>Door-to-door: 218,033 voters</li>
+        <li>WhatsApp for youth clusters</li>
+      </ul>
+    </div>
+    <div class="reco-card">
+      <div class="reco-n">3</div>
+      <h3>Demographic Targeting</h3>
+      <p>Three distinct groups need tailored outreach for maximum resonance.</p>
+      <ul>
+        <li>Youth 21.0% — social media &amp; colleges</li>
+        <li>Seniors 14.3% — home visits, health camps</li>
+        <li>Women 50.0% — SHG forums, safety issues</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="section-heading">
+    <span class="section-num">§ 02</span>
+    <h2>Executive Summary</h2>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-box">
+      <h3>Voter Demographics</h3>
+      <div class="kv-row"><span class="kv-label">Total Voters</span><span class="kv-val">338,289</span></div>
+      <div class="kv-row"><span class="kv-label">Male</span><span class="kv-val">169,094 (50.0%)</span></div>
+      <div class="kv-row"><span class="kv-label">Female</span><span class="kv-val">169,119 (50.0%)</span></div>
+      <div class="kv-row"><span class="kv-label">Average Age</span><span class="kv-val">42.8 years</span></div>
+      <div class="kv-row"><span class="kv-label">Youth (&lt;30)</span><span class="kv-val">71,202 (21.0%)</span></div>
+      <div class="kv-row"><span class="kv-label">Seniors (60+)</span><span class="kv-val">48,336 (14.3%)</span></div>
+      <div class="kv-row"><span class="kv-label">Mobile Coverage</span><span class="kv-val">35.5%</span></div>
+    </div>
+    <div class="summary-box">
+      <h3>Geographic Coverage</h3>
+      <div class="kv-row"><span class="kv-label">Police Stations</span><span class="kv-val">9</span></div>
+      <div class="kv-row"><span class="kv-label">Towns / Villages</span><span class="kv-val">49</span></div>
+      <div class="kv-row"><span class="kv-label">Polling Stations</span><span class="kv-val">445</span></div>
+      <div class="kv-row"><span class="kv-label">PIN Codes</span><span class="kv-val">8</span></div>
+      <div class="kv-row"><span class="kv-label">Data Quality</span><span class="kv-val">92.8% complete</span></div>
+      <div class="kv-row"><span class="kv-label">Staff Required</span><span class="kv-val">50 – 60 workers</span></div>
+      <div class="kv-row"><span class="kv-label">Campaign Duration</span><span class="kv-val">6 weeks</span></div>
+    </div>
+  </div>
+
+  <!-- PRIORITY AREAS -->
+  <div class="section-heading">
+    <span class="section-num">§ 03</span>
+    <h2>Priority Areas — Top 10</h2>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Area</th>
+        <th>Type</th>
+        <th class="num">Voters</th>
+        <th class="num">% of Total</th>
+        <th>Priority Level</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num"><span class="rank-dot top">1</span></td>
+        <td><strong>HOSUR TOWN</strong></td>
+        <td>Police Station</td>
+        <td class="num">91,348</td>
+        <td class="num">27.0%</td>
+        <td><span class="badge badge-high">High</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot top">2</span></td>
+        <td><strong>SIPCOT CIRCLE</strong></td>
+        <td>Police Station</td>
+        <td class="num">73,254</td>
+        <td class="num">21.7%</td>
+        <td><span class="badge badge-high">High</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot top">3</span></td>
+        <td><strong>HUDCO</strong></td>
+        <td>Police Station</td>
+        <td class="num">65,180</td>
+        <td class="num">19.3%</td>
+        <td><span class="badge badge-high">High</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot top">4</span></td>
+        <td><strong>BAGALUR CIRCLE</strong></td>
+        <td>Police Station</td>
+        <td class="num">46,823</td>
+        <td class="num">13.8%</td>
+        <td><span class="badge badge-med">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot top">5</span></td>
+        <td><strong>MATHIGIRI</strong></td>
+        <td>Police Station</td>
+        <td class="num">39,141</td>
+        <td class="num">11.6%</td>
+        <td><span class="badge badge-med">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot top">6</span></td>
+        <td><strong>BERIGAI</strong></td>
+        <td>Police Station</td>
+        <td class="num">13,174</td>
+        <td class="num">3.9%</td>
+        <td><span class="badge badge-med">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot ">7</span></td>
+        <td><strong>KELAMANGALAM</strong></td>
+        <td>Police Station</td>
+        <td class="num">7,594</td>
+        <td class="num">2.2%</td>
+        <td><span class="badge badge-low">Low</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot ">8</span></td>
+        <td><strong>BAGALUR</strong></td>
+        <td>Police Station</td>
+        <td class="num">1,076</td>
+        <td class="num">0.3%</td>
+        <td><span class="badge badge-low">Low</span></td>
+      </tr>
+      <tr>
+        <td class="num"><span class="rank-dot ">9</span></td>
+        <td><strong>SHOOLAGIRI</strong></td>
+        <td>Police Station</td>
+        <td class="num">699</td>
+        <td class="num">0.2%</td>
+        <td><span class="badge badge-low">Low</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- RESOURCE ALLOCATION -->
+  <div class="section-heading">
+    <span class="section-num">§ 04</span>
+    <h2>Resource Allocation</h2>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-box">
+      <h3>Staff Deployment by Police Station</h3>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">HOSUR TOWN</span><span class="progress-pct">13 staff · HIGH</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:100%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">SIPCOT CIRCLE</span><span class="progress-pct">10 staff · HIGH</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:100%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">HUDCO</span><span class="progress-pct">9 staff · HIGH</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:96%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BAGALUR CIRCLE</span><span class="progress-pct">6 staff · MEDIUM</span></div>
+        <div class="progress-track"><div class="progress-fill med" style="width:69%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">MATHIGIRI</span><span class="progress-pct">5 staff · MEDIUM</span></div>
+        <div class="progress-track"><div class="progress-fill med" style="width:58%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BERIGAI</span><span class="progress-pct">5 staff · LOW</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:19%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">KELAMANGALAM</span><span class="progress-pct">5 staff · LOW</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:11%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BAGALUR</span><span class="progress-pct">5 staff · LOW</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:1%"></div></div>
+      </div>
+    </div>
+    <div class="summary-box">
+      <h3>Budget Allocation (Proportional to Voters)</h3>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">HOSUR TOWN</span><span class="progress-pct">27.0%</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:100%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">SIPCOT CIRCLE</span><span class="progress-pct">21.7%</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:100%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">HUDCO</span><span class="progress-pct">19.3%</span></div>
+        <div class="progress-track"><div class="progress-fill " style="width:96%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BAGALUR CIRCLE</span><span class="progress-pct">13.8%</span></div>
+        <div class="progress-track"><div class="progress-fill med" style="width:69%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">MATHIGIRI</span><span class="progress-pct">11.6%</span></div>
+        <div class="progress-track"><div class="progress-fill med" style="width:58%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BERIGAI</span><span class="progress-pct">3.9%</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:19%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">KELAMANGALAM</span><span class="progress-pct">2.2%</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:11%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span class="progress-name">BAGALUR</span><span class="progress-pct">0.3%</span></div>
+        <div class="progress-track"><div class="progress-fill low" style="width:1%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN TIMELINE -->
+  <div class="section-heading">
+    <span class="section-num">§ 05</span>
+    <h2>Campaign Strategy &amp; Timeline</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-week">Weeks 1 – 2</div>
+      <h3>High Priority Areas</h3>
+      <ul>
+        <li>Focus on top 3 police stations: HOSUR TOWN, SIPCOT CIRCLE, HUDCO</li>
+        <li>Deploy 30 staff members across key locations</li>
+        <li>Conduct 15 public meetings in top 10 towns</li>
+        <li>Launch SMS campaign in high mobile-coverage areas</li>
+      </ul>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot step2"></div>
+      <div class="tl-week s2">Weeks 3 – 4</div>
+      <h3>Medium Priority Areas</h3>
+      <ul>
+        <li>Expand to remaining police stations</li>
+        <li>Deploy 20 additional staff members</li>
+        <li>Conduct 20 public meetings</li>
+        <li>Continue door-to-door campaigns</li>
+      </ul>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot step3"></div>
+      <div class="tl-week s3">Weeks 5 – 6</div>
+      <h3>Complete Coverage + Follow-up</h3>
+      <ul>
+        <li>All 445 polling stations covered</li>
+        <li>Follow-up with contacted voters</li>
+        <li>Final rallies in major towns</li>
+        <li>Get-out-the-vote preparation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DIGITAL VS TRADITIONAL -->
+  <div class="section-heading">
+    <span class="section-num">§ 06</span>
+    <h2>Digital vs. Traditional Strategy</h2>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-box">
+      <h3>Digital Campaigns (35.5% coverage)</h3>
+      <div class="kv-row"><span class="kv-label">Target Voters</span><span class="kv-val">120,256</span></div>
+      <div class="kv-row"><span class="kv-label">Primary Channel</span><span class="kv-val">SMS + WhatsApp</span></div>
+      <div class="kv-row"><span class="kv-label">Secondary Channel</span><span class="kv-val">Voice Calls</span></div>
+      <div class="kv-row"><span class="kv-label">Youth Focus</span><span class="kv-val">Social Media</span></div>
+      <div style="margin-top:16px;padding:12px;background:rgba(192,57,43,0.06);border-radius:2px;font-size:0.84rem;">
+        SMS with personalised messages · WhatsApp groups · Social media (youth) · Follow-up voice calls
+      </div>
+    </div>
+    <div class="summary-box">
+      <h3>Traditional Campaigns (64.5% coverage)</h3>
+      <div class="kv-row"><span class="kv-label">Target Voters</span><span class="kv-val">218,033</span></div>
+      <div class="kv-row"><span class="kv-label">Primary Method</span><span class="kv-val">Door-to-door</span></div>
+      <div class="kv-row"><span class="kv-label">Public Meetings</span><span class="kv-val">50+ meetings</span></div>
+      <div class="kv-row"><span class="kv-label">Coverage</span><span class="kv-val">All 49 towns</span></div>
+      <div style="margin-top:16px;padding:12px;background:rgba(192,57,43,0.06);border-radius:2px;font-size:0.84rem;">
+        Door-to-door in all towns · Public meetings · Street corner meetings · Poster distribution · Local leader engagement
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMOGRAPHIC TARGETING -->
+  <div class="section-heading">
+    <span class="section-num">§ 07</span>
+    <h2>Demographic Targeting</h2>
+  </div>
+  <div class="demo-grid">
+    <div class="demo-card">
+      <div class="demo-icon">👥</div>
+      <h3>Youth Engagement</h3>
+      <div class="demo-count">71,202 voters · 21.0%</div>
+      <ul>
+        <li>Social media campaigns</li>
+        <li>College outreach programs</li>
+        <li>Sports event sponsorships</li>
+        <li>Employment & education focus</li>
+      </ul>
+    </div>
+    <div class="demo-card">
+      <div class="demo-icon">👩</div>
+      <h3>Women's Outreach</h3>
+      <div class="demo-count">169,119 voters · 50.0%</div>
+      <ul>
+        <li>Self-help group meetings</li>
+        <li>Women's forums</li>
+        <li>Health camps</li>
+        <li>Safety & security issues</li>
+      </ul>
+    </div>
+    <div class="demo-card">
+      <div class="demo-icon">👴</div>
+      <h3>Senior Citizens</h3>
+      <div class="demo-count">48,336 voters · 14.3%</div>
+      <ul>
+        <li>Home visits</li>
+        <li>Health camps</li>
+        <li>Pension support</li>
+        <li>Accessibility improvements</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CRITICAL INSIGHTS -->
+  <div class="section-heading">
+    <span class="section-num">§ 08</span>
+    <h2>Critical Insights</h2>
+  </div>
+  <div class="insights-grid">
+    <div class="insight-card strengths">
+      <h3>✓ Strengths</h3>
+      <ul>
+        <li><span class="ico">✓</span>Female majority (50.0%) — ideal for women-focused campaigns</li>
+        <li><span class="ico">✓</span>Well-distributed polling stations</li>
+        <li><span class="ico">✓</span>Good data quality — 92.8% complete records</li>
+      </ul>
+    </div>
+    <div class="insight-card challenges">
+      <h3>⚠ Challenges</h3>
+      <ul>
+        <li><span class="ico">⚠</span>Resource-intensive — 50-60 field workers needed</li>
+      </ul>
+    </div>
+    <div class="insight-card opportunities">
+      <h3>💡 Opportunities</h3>
+      <ul>
+        <li><span class="ico">💡</span>Female majority = women's issues will resonate deeply</li>
+        <li><span class="ico">💡</span>Youth spread (21.0%) = scalable youth programs</li>
+        <li><span class="ico">💡</span>Digital campaign potential in high-coverage areas</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="section-heading">
+    <span class="section-num">§ 09</span>
+    <h2>Action Items</h2>
+  </div>
+  <div class="checklist-grid">
+    <div class="checklist-col">
+      <h3>Immediate (This Week)</h3>
+      <div class="check-item"><div class="check-box"></div>Deploy teams to top 3 police stations</div>
+      <div class="check-item"><div class="check-box"></div>Set up SMS campaigns</div>
+      <div class="check-item"><div class="check-box"></div>Organize volunteer teams</div>
+      <div class="check-item"><div class="check-box"></div>Schedule public meetings</div>
+      <div class="check-item"><div class="check-box"></div>Print campaign materials</div>
+    </div>
+    <div class="checklist-col">
+      <h3>Short-term (Next 2 Weeks)</h3>
+      <div class="check-item"><div class="check-box"></div>Complete coverage of all 9 police stations</div>
+      <div class="check-item"><div class="check-box"></div>Conduct 30+ public meetings</div>
+      <div class="check-item"><div class="check-box"></div>Launch youth programs</div>
+      <div class="check-item"><div class="check-box"></div>Organize women's forums</div>
+      <div class="check-item"><div class="check-box"></div>Start senior outreach</div>
+    </div>
+    <div class="checklist-col">
+      <h3>Ongoing</h3>
+      <div class="check-item"><div class="check-box"></div>Monitor campaign effectiveness</div>
+      <div class="check-item"><div class="check-box"></div>Adjust resource allocation</div>
+      <div class="check-item"><div class="check-box"></div>Maintain voter database</div>
+      <div class="check-item"><div class="check-box"></div>Track voter contact</div>
+      <div class="check-item"><div class="check-box"></div>Prepare for election day</div>
+    </div>
+  </div>
+
+  <!-- SUCCESS METRICS -->
+  <div class="section-heading">
+    <span class="section-num">§ 10</span>
+    <h2>Success Metrics</h2>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-box">
+      <h3>Coverage Targets</h3>
+      <div class="kv-row"><span class="kv-label">Total Voter Contact</span><span class="kv-val">338,289 (100%)</span></div>
+      <div class="kv-row"><span class="kv-label">Digital Reach (SMS/WhatsApp)</span><span class="kv-val">120,256 voters</span></div>
+      <div class="kv-row"><span class="kv-label">Ground Reach (Door-to-door)</span><span class="kv-val">218,033 voters</span></div>
+      <div class="kv-row"><span class="kv-label">Public Meetings</span><span class="kv-val">50+ meetings</span></div>
+      <div class="kv-row"><span class="kv-label">Timeline</span><span class="kv-val">6 weeks</span></div>
+    </div>
+    <div class="metric-box">
+      <h3>Engagement Targets</h3>
+      <div class="kv-row"><span class="kv-label">Youth Events</span><span class="kv-val">10+ events</span></div>
+      <div class="kv-row"><span class="kv-label">Women's Forums</span><span class="kv-val">20+ meetings</span></div>
+      <div class="kv-row"><span class="kv-label">Senior Programs</span><span class="kv-val">15+ health camps</span></div>
+      <div class="kv-row"><span class="kv-label">Volunteer Recruitment</span><span class="kv-val">200+ volunteers</span></div>
+      <div class="kv-row"><span class="kv-label">Staff Deployment</span><span class="kv-val">50-60 workers</span></div>
+    </div>
+  </div>
+
+  <!-- QUICK REFERENCE -->
+  <div class="section-heading">
+    <span class="section-num">§ 11</span>
+    <h2>Quick Reference</h2>
+  </div>
+  <div class="quick-grid">
+    <div class="summary-box">
+      <h3>Top 5 Police Stations</h3>
+      <div class="kv-row"><span class="kv-label">1. HOSUR TOWN</span><span class="kv-val">91,348</span></div>
+      <div class="kv-row"><span class="kv-label">2. SIPCOT CIRCLE</span><span class="kv-val">73,254</span></div>
+      <div class="kv-row"><span class="kv-label">3. HUDCO</span><span class="kv-val">65,180</span></div>
+      <div class="kv-row"><span class="kv-label">4. BAGALUR CIRCLE</span><span class="kv-val">46,823</span></div>
+      <div class="kv-row"><span class="kv-label">5. MATHIGIRI</span><span class="kv-val">39,141</span></div>
+    </div>
+    <div class="summary-box">
+      <h3>Top 5 Towns</h3>
+      <div class="kv-row"><span class="kv-label">1. HOSUR</span><span class="kv-val">182,049</span></div>
+      <div class="kv-row"><span class="kv-label">2. MATHIGIRI</span><span class="kv-val">21,859</span></div>
+      <div class="kv-row"><span class="kv-label">3. BAGALUR</span><span class="kv-val">9,715</span></div>
+      <div class="kv-row"><span class="kv-label">4. NALLUR</span><span class="kv-val">9,170</span></div>
+      <div class="kv-row"><span class="kv-label">5. BEGAPPALLI</span><span class="kv-val">9,161</span></div>
+    </div>
+    <div class="summary-box">
+      <h3>Key Contacts</h3>
+      <div class="kv-row"><span class="kv-label">Campaign Manager</span><span class="kv-val">[Name]</span></div>
+      <div class="kv-row"><span class="kv-label">Field Coordinator</span><span class="kv-val">[Name]</span></div>
+      <div class="kv-row"><span class="kv-label">Digital Lead</span><span class="kv-val">[Name]</span></div>
+      <div class="kv-row"><span class="kv-label">Volunteer Head</span><span class="kv-val">[Name]</span></div>
+      <div class="kv-row"><span class="kv-label">Emergency Contact</span><span class="kv-val">[Number]</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <div class="doc-footer-inner">
+    <div>
+      <span class="brand">CANDIDATE BRIEFING — ASS 55 HOSUR</span><br>
+      Strategic overview document. For operational details refer to the Field Operations Manual.
+    </div>
+    <div style="text-align:right">
+      Generated: April 02, 2026 · 07:13 PM<br>
+      Data: 338,289 voters · Quality: 92.8% complete
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
